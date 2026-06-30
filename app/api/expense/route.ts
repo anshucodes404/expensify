@@ -11,6 +11,7 @@ const expenseSchema = z.object({
   note: z.string().optional(),
 });
 
+
 export async function POST(req: NextRequest) {
   try {
     const { _id } = await verifyToken();
@@ -69,3 +70,36 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+
+
+export async function GET() {
+  try {
+    const { _id } = await verifyToken();
+
+    await connectDB();
+
+    const expenses = await Expense.find({ userId: _id });
+
+    return NextResponse.json(
+      {
+        success: true,
+        msg: "User expeses fetched successfully",
+        data: expenses
+      }, {
+        status: 200
+      }
+    )
+  } catch (error: unknown) {
+    console.error(error);
+    return NextResponse.json(
+      {
+        success: false,
+        msg: "Internal Server Error"
+      }, {
+        status: 500
+      }
+    )
+  }
+}
+
+
